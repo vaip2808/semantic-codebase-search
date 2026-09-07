@@ -1,0 +1,463 @@
+[
+  {
+    "test_case_id": 1,
+    "pattern": "Plain top-level function calls",
+    "function_name": "get",
+    "class_name": null,
+    "file_path": "requests/api.py",
+    "func_id": 22,
+    "status": "PASS",
+    "expected_callees": [
+      "request"
+    ],
+    "extracted_callees": [
+      "request"
+    ],
+    "extracted_callers": [
+      "build_digest_header",
+      "build_digest_header",
+      "build_digest_header",
+      "handle_401",
+      "dispatch_hook",
+      "prepare_content_length",
+      "links",
+      "links",
+      "get_netrc_auth",
+      "get_encoding_from_headers",
+      "set_environ",
+      "get_proxy",
+      "select_proxy",
+      "resolve_proxies",
+      "resolve_proxies"
+    ],
+    "matched_callees": [
+      "request"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 2,
+    "pattern": "Plain top-level function calls",
+    "function_name": "post",
+    "class_name": null,
+    "file_path": "requests/api.py",
+    "func_id": 25,
+    "status": "PASS",
+    "expected_callees": [
+      "request"
+    ],
+    "extracted_callees": [
+      "request"
+    ],
+    "extracted_callers": [],
+    "matched_callees": [
+      "request"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 3,
+    "pattern": "Plain top-level function calls",
+    "function_name": "request",
+    "class_name": null,
+    "file_path": "requests/api.py",
+    "func_id": 21,
+    "status": "PARTIAL",
+    "expected_callees": [
+      "request",
+      "Session"
+    ],
+    "extracted_callees": [
+      "__init__",
+      "request"
+    ],
+    "extracted_callers": [
+      "request",
+      "get",
+      "options",
+      "head",
+      "post",
+      "put",
+      "patch",
+      "delete",
+      "__init__",
+      "__init__",
+      "__init__",
+      "__init__"
+    ],
+    "matched_callees": [
+      "request"
+    ],
+    "missed_callees": [
+      "Session"
+    ]
+  },
+  {
+    "test_case_id": 4,
+    "pattern": "self.method() calls inside classes",
+    "function_name": "request",
+    "class_name": "Session",
+    "file_path": "requests/sessions.py",
+    "func_id": 179,
+    "status": "PASS",
+    "expected_callees": [
+      "prepare_request",
+      "send",
+      "merge_environment_settings"
+    ],
+    "extracted_callees": [
+      "__init__",
+      "prepare_request",
+      "is_prepared",
+      "merge_environment_settings",
+      "update",
+      "send"
+    ],
+    "extracted_callers": [
+      "get",
+      "options",
+      "head",
+      "post",
+      "put",
+      "patch",
+      "delete"
+    ],
+    "matched_callees": [
+      "prepare_request",
+      "send",
+      "merge_environment_settings"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 5,
+    "pattern": "self.method() calls inside classes",
+    "function_name": "prepare_request",
+    "class_name": "Session",
+    "file_path": "requests/sessions.py",
+    "func_id": 178,
+    "status": "FAIL",
+    "expected_callees": [
+      "prepare_url",
+      "prepare_headers",
+      "prepare_body",
+      "prepare_auth"
+    ],
+    "extracted_callees": [
+      "cookiejar_from_dict",
+      "merge_cookies",
+      "merge_cookies",
+      "get_netrc_auth",
+      "__init__",
+      "prepare",
+      "merge_setting",
+      "merge_setting",
+      "merge_setting",
+      "merge_hooks"
+    ],
+    "extracted_callers": [
+      "request"
+    ],
+    "matched_callees": [],
+    "missed_callees": [
+      "prepare_url",
+      "prepare_headers",
+      "prepare_body",
+      "prepare_auth"
+    ]
+  },
+  {
+    "test_case_id": 6,
+    "pattern": "self.method() calls inside classes",
+    "function_name": "json",
+    "class_name": "Response",
+    "file_path": "requests/models.py",
+    "func_id": 162,
+    "status": "FAIL",
+    "expected_callees": [
+      "encoding",
+      "loads"
+    ],
+    "extracted_callees": [
+      "content",
+      "guess_json_utf",
+      "content",
+      "content",
+      "text"
+    ],
+    "extracted_callers": [
+      "__init__",
+      "prepare"
+    ],
+    "matched_callees": [],
+    "missed_callees": [
+      "encoding",
+      "loads"
+    ]
+  },
+  {
+    "test_case_id": 7,
+    "pattern": "Calls via inherited methods",
+    "function_name": "send",
+    "class_name": "HTTPAdapter",
+    "file_path": "requests/adapters.py",
+    "func_id": 20,
+    "status": "PARTIAL",
+    "expected_callees": [
+      "get_connection",
+      "build_response",
+      "cert_verify"
+    ],
+    "extracted_callees": [
+      "is_prepared",
+      "get_connection_with_tls_context",
+      "cert_verify",
+      "request_url",
+      "add_headers",
+      "build_response"
+    ],
+    "extracted_callers": [],
+    "matched_callees": [
+      "build_response",
+      "cert_verify"
+    ],
+    "missed_callees": [
+      "get_connection"
+    ]
+  },
+  {
+    "test_case_id": 8,
+    "pattern": "Calls via inherited methods",
+    "function_name": "prepare",
+    "class_name": "PreparedRequest",
+    "file_path": "requests/models.py",
+    "func_id": 127,
+    "status": "PASS",
+    "expected_callees": [
+      "prepare_method",
+      "prepare_url",
+      "prepare_headers",
+      "prepare_body",
+      "prepare_auth"
+    ],
+    "extracted_callees": [
+      "prepare_method",
+      "prepare_url",
+      "prepare_headers",
+      "prepare_cookies",
+      "prepare_body",
+      "prepare_auth",
+      "prepare_hooks"
+    ],
+    "extracted_callers": [],
+    "matched_callees": [
+      "prepare_method",
+      "prepare_url",
+      "prepare_headers",
+      "prepare_body",
+      "prepare_auth"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 9,
+    "pattern": "Imported/aliased function calls",
+    "function_name": "merge_setting",
+    "class_name": null,
+    "file_path": "requests/sessions.py",
+    "func_id": 166,
+    "status": "PASS",
+    "expected_callees": [
+      "to_key_val_list"
+    ],
+    "extracted_callees": [
+      "to_key_val_list",
+      "update",
+      "to_key_val_list",
+      "items"
+    ],
+    "extracted_callers": [
+      "merge_hooks",
+      "prepare_request",
+      "prepare_request",
+      "prepare_request",
+      "merge_environment_settings",
+      "merge_environment_settings",
+      "merge_environment_settings",
+      "merge_environment_settings"
+    ],
+    "matched_callees": [
+      "to_key_val_list"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 10,
+    "pattern": "Imported/aliased function calls",
+    "function_name": "prepare_url",
+    "class_name": "PreparedRequest",
+    "file_path": "requests/models.py",
+    "func_id": 132,
+    "status": "PARTIAL",
+    "expected_callees": [
+      "parse_url",
+      "to_native_string",
+      "requote_uri"
+    ],
+    "extracted_callees": [
+      "unicode_is_ascii",
+      "_get_idna_encoded_host",
+      "to_native_string",
+      "_encode_params",
+      "requote_uri"
+    ],
+    "extracted_callers": [
+      "prepare"
+    ],
+    "matched_callees": [
+      "to_native_string",
+      "requote_uri"
+    ],
+    "missed_callees": [
+      "parse_url"
+    ]
+  },
+  {
+    "test_case_id": 11,
+    "pattern": "Decorated functions (@property)",
+    "function_name": "apparent_encoding",
+    "class_name": "Response",
+    "file_path": "requests/models.py",
+    "func_id": 152,
+    "status": "PASS",
+    "expected_callees": [
+      "content"
+    ],
+    "extracted_callees": [
+      "content"
+    ],
+    "extracted_callers": [
+      "text"
+    ],
+    "matched_callees": [
+      "content"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 12,
+    "pattern": "Decorated functions (@property)",
+    "function_name": "ok",
+    "class_name": "Response",
+    "file_path": "requests/models.py",
+    "func_id": 148,
+    "status": "PASS",
+    "expected_callees": [
+      "raise_for_status"
+    ],
+    "extracted_callees": [
+      "raise_for_status"
+    ],
+    "extracted_callers": [
+      "__bool__",
+      "__nonzero__"
+    ],
+    "matched_callees": [
+      "raise_for_status"
+    ],
+    "missed_callees": []
+  },
+  {
+    "test_case_id": 13,
+    "pattern": "Decorated functions (custom decorator)",
+    "function_name": "dispatch_hook",
+    "class_name": null,
+    "file_path": "requests/hooks.py",
+    "func_id": 113,
+    "status": "FAIL",
+    "expected_callees": [
+      "hook"
+    ],
+    "extracted_callees": [
+      "get"
+    ],
+    "extracted_callers": [
+      "send"
+    ],
+    "matched_callees": [],
+    "missed_callees": [
+      "hook"
+    ]
+  },
+  {
+    "test_case_id": 14,
+    "pattern": "Calls through dynamic dispatch",
+    "function_name": "send",
+    "class_name": "Session",
+    "file_path": "requests/sessions.py",
+    "func_id": 187,
+    "status": "PARTIAL",
+    "expected_callees": [
+      "get_adapter",
+      "adapter.send",
+      "dispatch_hook"
+    ],
+    "extracted_callees": [
+      "resolve_proxies",
+      "is_prepared",
+      "get",
+      "get_adapter",
+      "send",
+      "dispatch_hook",
+      "extract_cookies_to_jar",
+      "extract_cookies_to_jar",
+      "resolve_redirects",
+      "next",
+      "resolve_redirects"
+    ],
+    "extracted_callers": [
+      "request",
+      "send"
+    ],
+    "matched_callees": [
+      "get_adapter",
+      "dispatch_hook"
+    ],
+    "missed_callees": [
+      "adapter.send"
+    ]
+  },
+  {
+    "test_case_id": 15,
+    "pattern": "Calls through dynamic dispatch",
+    "function_name": "merge_environment_settings",
+    "class_name": "Session",
+    "file_path": "requests/sessions.py",
+    "func_id": 188,
+    "status": "PARTIAL",
+    "expected_callees": [
+      "get_netrc_auth",
+      "get_environ_proxies"
+    ],
+    "extracted_callees": [
+      "get",
+      "get_environ_proxies",
+      "items",
+      "get",
+      "get",
+      "merge_setting",
+      "merge_setting",
+      "merge_setting",
+      "merge_setting"
+    ],
+    "extracted_callers": [
+      "request"
+    ],
+    "matched_callees": [
+      "get_environ_proxies"
+    ],
+    "missed_callees": [
+      "get_netrc_auth"
+    ]
+  }
+]

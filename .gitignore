@@ -1,0 +1,23 @@
+# Environment & Secrets
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temp Data & Clones
+data/
+data/clones/
+scratch/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store

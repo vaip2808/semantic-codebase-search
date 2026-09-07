@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Code Search Agent</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --sidebar-bg: rgba(13, 18, 30, 0.8);
+            --panel-bg: rgba(255, 255, 255, 0.02);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-glow: #6366f1;
+            --accent-glow-rgb: 99, 102, 241;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --font-main: 'Outfit', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --sidebar-width: 320px;
+            --drawer-width: 480px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Ambient background glow */
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--accent-glow-rgb), 0.08) 0%, rgba(0,0,0,0) 70%);
+            top: -200px;
+            right: -200px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, rgba(0,0,0,0) 70%);
+            bottom: -150px;
+            left: -150px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            border: 1px solid var(--accent-glow);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: var(--text-primary);
+            -webkit-text-fill-color: initial;
+            margin-left: 5px;
+        }
+
+        .btn-index {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            margin-bottom: 24px;
+        }
+
+        .btn-index:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .repos-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .repos-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-right: -8px;
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .repo-item {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .repo-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .repo-item.active {
+            border-color: var(--accent-glow);
+            background: rgba(99, 102, 241, 0.06);
+            box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.05);
+        }
+
+        .repo-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .repo-url {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .repo-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .status-badge.ready {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        .status-badge.pending, .status-badge.cloning, .status-badge.parsing, .status-badge.embedding {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+        .status-badge.failed {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        /* Main chat content panel */
+        .chat-panel {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: rgba(11, 15, 25, 0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        .chat-header {
+            height: 72px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: rgba(13, 18, 30, 0.3);
+        }
+
+        .active-repo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .active-repo-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .active-repo-url {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            gap: 16px;
+            text-align: center;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .empty-state h3 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .indexing-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 24px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-glow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Message bubbles */
+        .message-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 0.98rem;
+            position: relative;
+        }
+
+        .message-row.user .message-bubble {
+            background-color: var(--accent-glow);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        .message-row.assistant .message-bubble {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Formatting in message text */
+        .message-bubble p {
+            margin-bottom: 12px;
+        }
+
+        .message-bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-bubble code {
+            font-family: var(--font-code);
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+
+        .message-bubble pre {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 14px 0;
+        }
+
+        .message-bubble pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.85rem;
+        }
+
+        /* Citations list */
+        .citations-container {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .citation-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            color: var(--accent-glow);
+            font-family: var(--font-code);
+        }
+
+        .citation-chip:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        /* Grounded Status Badges */
+        .grounded-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            font-family: var(--font-main);
+            letter-spacing: 0.02em;
+        }
+
+        .grounded-badge.success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #34d399;
+        }
+
+        .grounded-badge.warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+        }
+
+        .grounded-badge.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        /* Tool Limit Budget Warning Banner */
+        .tool-limit-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.06) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tool-limit-banner .banner-title {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-limit-banner .banner-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Collapsible Trace Container */
+        .trace-accordion {
+            margin-top: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .trace-header {
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.01);
+            transition: background 0.2s;
+        }
+
+        .trace-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+        }
+
+        .trace-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .trace-body.open {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .trace-step {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 12px;
+            border-left: 2px solid var(--accent-glow);
+            font-size: 0.8rem;
+        }
+
+        .trace-step-meta {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .trace-step-args {
+            font-family: var(--font-code);
+            color: var(--text-secondary);
+        }
+
+        /* Input area styling */
+        .chat-input-container {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(13, 18, 30, 0.3);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            align-items: center;
+            gap: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.98rem;
+            padding: 8px 4px;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn-send {
+            background: var(--accent-glow);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: var(--font-main);
+            transition: all 0.2s ease;
+        }
+
+        .btn-send:hover {
+            background: #4f46e5;
+        }
+
+        .btn-send:disabled {
+            background: var(--border-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        /* Sidebar details drawer/panel on the right */
+        .drawer {
+            position: absolute;
+            top: 0;
+            right: calc(-1 * var(--drawer-width));
+            width: var(--drawer-width);
+            height: 100%;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            z-index: 10;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            height: 72px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .drawer-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            font-family: var(--font-main);
+            color: var(--accent-glow);
+        }
+
+        .btn-close-drawer {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-close-drawer:hover {
+            color: var(--text-primary);
+        }
+
+        .drawer-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Line numbers styling inside code block view */
+        .code-view {
+            white-space: pre;
+            line-height: 1.6;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 12px;
+        }
+
+        .line-numbers {
+            text-align: right;
+            color: var(--text-secondary);
+            user-select: none;
+            opacity: 0.5;
+            border-right: 1px solid var(--border-color);
+            padding-right: 12px;
+        }
+
+        .line-num {
+            display: block;
+        }
+
+        .line-num.target-line {
+            color: var(--accent-glow);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .code-line {
+            display: block;
+            padding: 0 4px;
+            border-left: 3px solid transparent;
+        }
+
+        .code-line.target-line {
+            background-color: rgba(99, 102, 241, 0.16);
+            border-left-color: var(--accent-glow);
+            color: #ffffff;
+            border-radius: 2px;
+        }
+
+        .code-content {
+            color: #e5e7eb;
+            overflow-x: auto;
+        }
+
+        /* Modal dialog for Indexing new Repository */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            width: 500px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 12px 14px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: var(--accent-glow);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: var(--font-main);
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Tooltip notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 200;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Panel -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">SemanticSearch<span>v1</span></h1>
+            </div>
+            
+            <button class="btn-index" id="btnOpenIndexModal">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                Index Repository
+            </button>
+            
+            <h2 class="repos-section-title">Indexed Repositories</h2>
+            <div class="repos-list" id="reposList">
+                <!-- Repo items populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <div class="active-repo-info">
+                    <div class="active-repo-name" id="headerRepoName">Select a Repository</div>
+                    <div class="active-repo-url" id="headerRepoUrl">Choose from list or index a new one</div>
+                </div>
+            </div>
+            
+            <div class="chat-body" id="chatBody">
+                <div class="empty-state" id="emptyState">
+                    <h3>Explore Your Codebase</h3>
+                    <p>Select an indexed repository on the left, then ask questions about how behaviors are implemented or how data flows across files statically.</p>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question about the code..." disabled>
+                    <button class="btn-send" id="btnSend" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sliding Code Snippet Drawer -->
+        <div class="drawer" id="codeDrawer">
+            <div class="drawer-header">
+                <div class="drawer-title" id="drawerTitle">Code Viewer</div>
+                <button class="btn-close-drawer" id="btnCloseDrawer">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <div class="code-view">
+                    <div class="line-numbers" id="drawerLineNumbers"></div>
+                    <div class="code-content" id="drawerCodeContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Index Modal overlay -->
+    <div class="modal-overlay" id="indexModal">
+        <div class="modal">
+            <div class="modal-title">Index GitHub Repository</div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">Enter a public GitHub HTTPS URL. The repository will be cloned, statically analyzed, and embedded for search.</p>
+            <input type="text" class="modal-input" id="modalRepoUrl" placeholder="https://github.com/owner/repository">
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btnCloseModal">Cancel</button>
+                <button class="btn-send" id="btnStartIndex">Start Indexing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Error Notification</div>
+
+    <!-- UI Logic Script -->
+    <script>
+        const API_BASE = "http://127.0.0.1:8000/api";
+        let activeRepoId = null;
+        let activeRepoStatus = null;
+        let activeRepoFiles = new Set();
+        let pollInterval = null;
+        let sidebarPollInterval = null;
+
+        // HTML escaping utility
+        function escapeHTML(str) {
+            if (!str) return "";
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Relative time calculation helper
+        function formatRelativeTime(isoStr) {
+            if (!isoStr) return "";
+            const date = new Date(isoStr);
+            const now = new Date();
+            const diffSec = Math.floor((now - date) / 1000);
+            if (diffSec < 60) return `${Math.max(1, diffSec)} seconds ago`;
+            const diffMin = Math.floor(diffSec / 60);
+            if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? 's' : ''} ago`;
+            const diffDays = Math.floor(diffHr / 24);
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        }
+
+        // Sidebar polling management with Page Visibility API & Terminal State Auto-Stop
+        function startSidebarPolling() {
+            const ts = Date.now();
+            if (sidebarPollInterval || document.hidden) {
+                console.log(`[${ts}ms] [START_POLLING] Early return (activeInterval=${!!sidebarPollInterval}, hidden=${document.hidden})`);
+                return;
+            }
+            console.log(`[${ts}ms] [START_POLLING] Starting 6000ms timer.`);
+            fetchReposList();
+            sidebarPollInterval = setInterval(fetchReposList, 6000);
+        }
+
+        function stopSidebarPolling() {
+            const ts = Date.now();
+            if (sidebarPollInterval) {
+                console.log(`[${ts}ms] [STOP_POLLING] Clearing sidebar polling timer.`);
+                clearInterval(sidebarPollInterval);
+                sidebarPollInterval = null;
+            } else {
+                console.log(`[${ts}ms] [STOP_POLLING] Already stopped.`);
+            }
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            const ts = Date.now();
+            console.log(`[${ts}ms] [VISIBILITY_CHANGE] document.hidden=${document.hidden}`);
+            if (document.hidden) {
+                stopSidebarPolling();
+            } else {
+                startSidebarPolling();
+            }
+        });
+
+        // Elements
+        const reposList = document.getElementById("reposList");
+        const btnOpenIndexModal = document.getElementById("btnOpenIndexModal");
+        const indexModal = document.getElementById("indexModal");
+        const btnCloseModal = document.getElementById("btnCloseModal");
+        const modalRepoUrl = document.getElementById("modalRepoUrl");
+        const btnStartIndex = document.getElementById("btnStartIndex");
+        const headerRepoName = document.getElementById("headerRepoName");
+        const headerRepoUrl = document.getElementById("headerRepoUrl");
+        const chatBody = document.getElementById("chatBody");
+        const chatInput = document.getElementById("chatInput");
+        const btnSend = document.getElementById("btnSend");
+        const codeDrawer = document.getElementById("codeDrawer");
+        const drawerTitle = document.getElementById("drawerTitle");
+        const drawerLineNumbers = document.getElementById("drawerLineNumbers");
+        const drawerCodeContent = document.getElementById("drawerCodeContent");
+        const btnCloseDrawer = document.getElementById("btnCloseDrawer");
+        const toast = document.getElementById("toast");
+
+        // Initialization
+        window.addEventListener("DOMContentLoaded", () => {
+            startSidebarPolling();
+        });
+
+        // Open/Close Modal
+        btnOpenIndexModal.addEventListener("click", () => {
+            modalRepoUrl.value = "";
+            indexModal.classList.add("open");
+            modalRepoUrl.focus();
+        });
+        btnCloseModal.addEventListener("click", () => indexModal.classList.remove("open"));
+
+        // Trigger Repo Indexing
+        btnStartIndex.addEventListener("click", async () => {
+            const url = modalRepoUrl.value.trim();
+            if (!url) return;
+
+            btnStartIndex.disabled = true;
+            btnStartIndex.textContent = "Requesting...";
+
+            try {
+                const response = await fetch(`${API_BASE}/repos`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    showToast(data.detail || "Failed to start indexing.");
+                } else {
+                    indexModal.classList.remove("open");
+                    startSidebarPolling(); // Resume sidebar polling on new repo
+                    selectRepo(data.repo_id);
+                }
+            } catch (err) {
+                showToast("Connection failed to backend API server.");
+            } finally {
+                btnStartIndex.disabled = false;
+                btnStartIndex.textContent = "Start Indexing";
+            }
+        });
+
+        // Toast display utility
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 4000);
+        }
+
+        // Fetch list of repositories & auto-stop polling if all are in terminal state
+        async function fetchReposList() {
+            const ts = Date.now();
+            if (document.hidden) {
+                console.log(`[${ts}ms] [FETCH_REPOS] Skipped because document.hidden=true`);
+                return;
+            }
+            try {
+                console.log(`[${ts}ms] [FETCH_REPOS] Executing GET /api/repos`);
+                const response = await fetch(`${API_BASE}/repos`);
+                const repos = await response.json();
+                
+                reposList.innerHTML = "";
+                
+                if (repos.length === 0) {
+                    reposList.innerHTML = `<div style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-top: 20px;">No indexed repos.</div>`;
+                    stopSidebarPolling();
+                    return;
+                }
+
+                let hasActiveRepo = false;
+                repos.forEach(repo => {
+                    if (repo.status !== "ready" && repo.status !== "failed") {
+                        hasActiveRepo = true;
+                    }
+
+                    const item = document.createElement("div");
+                    item.className = `repo-item ${repo.id === activeRepoId ? 'active' : ''}`;
+                    item.dataset.id = repo.id;
+                    item.innerHTML = `
+                        <div class="repo-title">${escapeHTML(repo.name)}</div>
+                        <div class="repo-url">${escapeHTML(repo.url)}</div>
+                        <div class="repo-meta">
+                            <span class="status-badge ${repo.status}">${repo.status}</span>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary);">${new Date(repo.ingested_at).toLocaleDateString()}</span>
+                        </div>
+                    `;
+                    item.addEventListener("click", () => selectRepo(repo.id));
+                    reposList.appendChild(item);
+                });
+
+                console.log(`[${ts}ms] [FETCH_REPOS] Processed ${repos.length} repos (hasActiveRepo=${hasActiveRepo})`);
+
+                // Auto-stop sidebar polling if all repos reached terminal state
+                if (!hasActiveRepo) {
+                    stopSidebarPolling();
+                }
+            } catch (err) {
+                showToast("Error updating repositories list.");
+            }
+        }
+
+        // Select a Repo and update chat panel state
+        async function selectRepo(repoId) {
+            if (pollInterval) clearInterval(pollInterval);
+            activeRepoId = repoId;
+            
+            // Highlight active sidebar item
+            document.querySelectorAll(".repo-item").forEach(item => {
+                if (parseInt(item.dataset.id) === repoId) {
+                    item.classList.add("active");
+                } else {
+                    item.classList.remove("active");
+                }
+            });
+
+            // Fetch indexed files for citation validation
+            try {
+                const filesResp = await fetch(`${API_BASE}/repos/${repoId}/files`);
+                if (filesResp.ok) {
+                    const filesArr = await filesResp.json();
+                    activeRepoFiles = new Set(filesArr);
+                }
+            } catch (e) {
+                activeRepoFiles = new Set();
+            }
+
+            await checkRepoStatus();
+        }
+
+        // Check active repository status and poll if running
+        async function checkRepoStatus() {
+            if (!activeRepoId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/repos/${activeRepoId}/status`);
+                const repo = await response.json();
+                
+                activeRepoStatus = repo.status;
+                headerRepoName.textContent = repo.name;
+                headerRepoUrl.textContent = repo.url;
+
+                // Update UI state based on status
+                if (repo.status === "ready") {
+                    enableChat(true);
+                    renderWelcomeMessage();
+                } else if (repo.status === "failed") {
+                    enableChat(false);
+                    renderFailedIndexingState(repo);
+                } else {
+                    // Pending / In progress
+                    enableChat(false);
+                    renderIndexingProgressState(repo.status);
+                    
+                    // Poll status every 2 seconds
+                    pollInterval = setTimeout(checkRepoStatus, 2000);
+                }
+            } catch (err) {
+                showToast("Error fetching repository status.");
+            }
+        }
+
+        function enableChat(enabled) {
+            chatInput.disabled = !enabled;
+            btnSend.disabled = !enabled;
+            chatInput.placeholder = enabled ? "Ask a question about the code..." : "Select a ready repository to start chat...";
+            if (enabled) chatInput.focus();
+        }
+
+        function renderWelcomeMessage() {
+            chatBody.innerHTML = `
+                <div class="empty-state" id="emptyState">
+                    <h3>Explore '${headerRepoName.textContent}'</h3>
+                    <p>The codebase has been parsed and indexed. You can now ask questions about the flow of functions, classes, and logic across files.</p>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px; width:100%;">
+                        <button class="btn-secondary" style="font-size:0.85rem; text-align:left;" onclick="fillAndSend('Where is the entry point defined?')">Where is the entry point defined?</button>
+                        <button class="btn-secondary" style="font-size:0.85rem; text-align:left;" onclick="fillAndSend('What are some of the main helper functions?')">What are some of the main helper functions?</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function fillAndSend(text) {
+            chatInput.value = text;
+            sendMessage();
+        }
+
+        function renderFailedIndexingState(repo) {
+            const errorMsg = (typeof repo === 'object') ? (repo.error_message || "An unknown error occurred during indexing.") : repo;
+            const failedStage = (typeof repo === 'object' && repo.failed_stage) ? repo.failed_stage.toUpperCase() : null;
+            const failedAtRel = (typeof repo === 'object' && repo.failed_at) ? formatRelativeTime(repo.failed_at) : null;
+
+            chatBody.innerHTML = `
+                <div class="empty-state" style="color: var(--error);">
+                    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <h3 style="color: var(--error);">Indexing Failed</h3>
+                    ${failedStage ? `<div style="font-size: 0.82rem; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; padding: 6px 14px; color: #fca5a5; margin: 4px 0 8px 0;">Failed Stage: <strong>${failedStage}</strong> ${failedAtRel ? '&bull; ' + failedAtRel : ''}</div>` : ''}
+                    <p style="color: var(--text-secondary); max-width:440px; word-break:break-word;">${errorMsg}</p>
+                </div>
+            `;
+            fetchReposList(); // Refresh sidebar states
+        }
+
+        function renderIndexingProgressState(status) {
+            const displayStatus = {
+                "pending": "Queueing task...",
+                "cloning": "Cloning repository (shallow)...",
+                "parsing": "Parsing source AST call graphs...",
+                "embedding": "Generating vector embeddings..."
+            }[status] || "Indexing...";
+
+            chatBody.innerHTML = `
+                <div class="indexing-state">
+                    <div class="spinner"></div>
+                    <div style="font-weight: 500; font-size:1.1rem;">Indexing Repository</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">${displayStatus}</div>
+                </div>
+            `;
+            fetchReposList(); // Refresh sidebar states
+        }
+
+        // Send chat message
+        btnSend.addEventListener("click", sendMessage);
+        chatInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const question = chatInput.value.trim();
+            if (!question || !activeRepoId || activeRepoStatus !== "ready") return;
+
+            // Remove welcome state if present
+            const emptyState = document.getElementById("emptyState");
+            if (emptyState) emptyState.remove();
+
+            // Append user message
+            appendMessage("user", question);
+            chatInput.value = "";
+            enableChat(false);
+            chatInput.placeholder = "Agent is thinking...";
+
+            // Append loading indicator bubble
+            const loadingBubble = appendMessage("assistant", `<div style="display:flex; align-items:center; gap:8px;"><div class="spinner" style="width:16px; height:16px; border-width:2px;"></div>Agent is analyzing codebase path...</div>`);
+
+            try {
+                const response = await fetch(`${API_BASE}/repos/${activeRepoId}/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await response.json();
+                loadingBubble.remove(); // Remove spinner
+
+                if (!response.ok) {
+                    appendMessage("assistant", `<div style="color: var(--error);">Error running agent: ${data.detail || "Unknown error"}</div>`);
+                } else {
+                    // Render response bubble with grounded badge and status
+                    appendMessage("assistant", formatMarkdown(data.answer), data.trace, data.grounded, data.status);
+                }
+            } catch (err) {
+                loadingBubble.remove();
+                appendMessage("assistant", `<div style="color: var(--error);">Network connection lost to search agent.</div>`);
+            } finally {
+                enableChat(true);
+            }
+        }
+
+        // Append bubble helper
+        function appendMessage(role, htmlContent, trace = null, grounded = null, status = null) {
+            const row = document.createElement("div");
+            row.className = `message-row ${role}`;
+            
+            const bubble = document.createElement("div");
+            bubble.className = "message-bubble";
+            
+            // Priority 1, Fix 1 & 3: Render Grounded Status Badges & Tool Limit Banners
+            if (role === "assistant") {
+                let badgeHTML = "";
+                if (grounded === true) {
+                    badgeHTML = `<div class="grounded-badge success"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> Grounded ✓</div>`;
+                } else if (grounded === false && status === "tool_limit_reached") {
+                    badgeHTML = `<div class="grounded-badge warning"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Tool Budget Reached ⚠️</div>`;
+                } else if (grounded === false) {
+                    badgeHTML = `<div class="grounded-badge error"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Ungrounded ⚠️</div>`;
+                }
+
+                let bannerHTML = "";
+                if (status === "tool_limit_reached") {
+                    bannerHTML = `
+                        <div class="tool-limit-banner">
+                            <div class="banner-title">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Tool Execution Budget Limit Reached (10 Calls)
+                            </div>
+                            <div class="banner-desc">The search agent executed its maximum tool call budget before fully verifying the answer. Try asking a narrower question focusing on a specific function or class.</div>
+                        </div>
+                    `;
+                }
+
+                bubble.innerHTML = badgeHTML + bannerHTML + htmlContent;
+            } else {
+                bubble.innerHTML = htmlContent;
+            }
+            
+            row.appendChild(bubble);
+            chatBody.appendChild(row);
+            
+            // Add citations and trace logs if assistant message
+            if (role === "assistant") {
+                // Parse and attach citation badges aligned with backend check_is_grounded_v2
+                const citations = extractCitations(htmlContent);
+                if (citations.length > 0) {
+                    const citContainer = document.createElement("div");
+                    citContainer.className = "citations-container";
+                    citations.forEach(c => {
+                        const chip = document.createElement("div");
+                        chip.className = `citation-chip ${c.isLineSpecific ? 'line-specific' : 'whole-file'}`;
+                        
+                        const iconSVG = c.isLineSpecific
+                            ? `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>`
+                            : `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+                        
+                        const labelText = c.isLineSpecific
+                            ? `View ${c.display}`
+                            : `View file: ${c.display} (top)`;
+                            
+                        chip.innerHTML = `${iconSVG} ${labelText}`;
+                        chip.title = c.isLineSpecific ? `Open ${c.file} at lines ${c.start}-${c.end}` : `Open top of file ${c.file}`;
+                        chip.addEventListener("click", () => openCodeSnippet(c.file, c.start, c.end, c.isLineSpecific));
+                        citContainer.appendChild(chip);
+                    });
+                    bubble.appendChild(citContainer);
+                }
+
+                // Append trace collapsible if trace is passed
+                if (trace && trace.length > 0) {
+                    const accordion = document.createElement("div");
+                    accordion.className = "trace-accordion";
+                    
+                    const header = document.createElement("div");
+                    header.className = "trace-header";
+                    header.innerHTML = `
+                        <span>Execution Trace (${trace.length} tool calls)</span>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transform: rotate(0deg); transition: transform 0.2s;" class="arrow"><path d="M19 9l-7 7-7-7"></path></svg>
+                    `;
+                    
+                    const body = document.createElement("div");
+                    body.className = "trace-body";
+                    
+                    trace.forEach(t => {
+                        const step = document.createElement("div");
+                        step.className = "trace-step";
+                        step.innerHTML = `
+                            <div class="trace-step-meta">Turn ${t.turn}: '${t.tool}'</div>
+                            <div class="trace-step-args">args: ${JSON.stringify(t.args)}</div>
+                        `;
+                        body.appendChild(step);
+                    });
+
+                    header.addEventListener("click", () => {
+                        body.classList.toggle("open");
+                        const arrow = header.querySelector(".arrow");
+                        arrow.style.transform = body.classList.contains("open") ? "rotate(180deg)" : "rotate(0deg)";
+                    });
+
+                    accordion.appendChild(header);
+                    accordion.appendChild(body);
+                    bubble.appendChild(accordion);
+                }
+            }
+
+            // Scroll to bottom
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return row;
+        }
+
+        // Open Side drawer containing code lines with auto-scroll & target line highlighting
+        async function openCodeSnippet(filePath, startLine, endLine, isLineSpecific = true) {
+            drawerTitle.textContent = isLineSpecific 
+                ? `${filePath} (Lines ${startLine} - ${endLine})`
+                : `${filePath} (File Top)`;
+            drawerLineNumbers.innerHTML = "...";
+            drawerCodeContent.textContent = "Loading file slice from workspace...";
+            codeDrawer.classList.add("open");
+
+            try {
+                const response = await fetch(`${API_BASE}/repos/${activeRepoId}/file?file_path=${encodeURIComponent(filePath)}&start_line=${startLine}&end_line=${endLine}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    drawerCodeContent.textContent = data.detail || "Failed to load code slice.";
+                    drawerLineNumbers.innerHTML = "";
+                } else {
+                    const codeLines = data.code.split("\n");
+                    let numHTML = "";
+                    let codeHTML = "";
+                    
+                    for (let idx = 0; idx < codeLines.length; idx++) {
+                        const lineNum = data.padded_start + idx;
+                        const lineText = escapeHTML(codeLines[idx]);
+                        
+                        const isTargetLine = isLineSpecific && (lineNum >= startLine && lineNum <= endLine);
+                        
+                        if (isTargetLine) {
+                            numHTML += `<span class="line-num target-line" id="line-num-${lineNum}">${lineNum}</span>\n`;
+                            codeHTML += `<div class="code-line target-line" id="code-line-${lineNum}">${lineText || ' '}</div>`;
+                        } else {
+                            numHTML += `<span class="line-num" id="line-num-${lineNum}">${lineNum}</span>\n`;
+                            codeHTML += `<div class="code-line" id="code-line-${lineNum}">${lineText || ' '}</div>`;
+                        }
+                    }
+
+                    drawerLineNumbers.innerHTML = numHTML;
+                    drawerCodeContent.innerHTML = codeHTML;
+
+                    // Auto-scroll logic: Bring target startLine into smooth view if isLineSpecific is true
+                    if (isLineSpecific) {
+                        setTimeout(() => {
+                            const targetElem = document.getElementById(`code-line-${startLine}`);
+                            if (targetElem) {
+                                targetElem.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                        }, 60);
+                    } else {
+                        const drawerBody = document.querySelector(".drawer-body");
+                        if (drawerBody) drawerBody.scrollTop = 0;
+                    }
+                }
+            } catch (err) {
+                drawerCodeContent.textContent = "Failed to reach backend service.";
+                drawerLineNumbers.innerHTML = "";
+            }
+        }
+
+        btnCloseDrawer.addEventListener("click", () => codeDrawer.classList.remove("open"));
+
+        // Close drawer if clicking outside main panel
+        document.addEventListener("mousedown", (e) => {
+            if (codeDrawer.classList.contains("open") && !codeDrawer.contains(e.target) && !e.target.closest(".citation-chip")) {
+                codeDrawer.classList.remove("open");
+            }
+        });
+
+        // Simple Markdown parsing helper for code blocks and paragraphs
+        function formatMarkdown(text) {
+            // Replace preformatted blocks
+            text = text.replace(/```python([\s\S]*?)```/g, '<pre><code class="language-python">$1</code></pre>');
+            text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            // Replace inline codes
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // Format newlines into paragraphs
+            const lines = text.split("\n\n");
+            return lines.map(l => `<p>${l.replace(/\n/g, '<br>')}</p>`).join("");
+        }
+
+        // Priority 1, Fix 4: Parse citation tags aligned with backend check_is_grounded_v2
+        function extractCitations(text) {
+            if (!text || !activeRepoFiles || activeRepoFiles.size === 0) return [];
+            
+            const cleanText = text.replace(/\\/g, "/");
+            const citations = [];
+
+            // Pattern 1: Colon Line / Range references: path/to/file.py:651, file.py:L10-L20, file.py:10-20
+            const lineRegex = /([\w\-\.\/]+\.py)(?::(?:line\s*)?L?(\d+)(?:-L?(\d+))?)?/gi;
+            let match;
+            while ((match = lineRegex.exec(cleanText)) !== null) {
+                const fileRaw = match[1];
+                const hasExplicitLine = !!match[2];
+                const start = hasExplicitLine ? parseInt(match[2]) : 1;
+                const end = match[3] ? parseInt(match[3]) : (hasExplicitLine ? parseInt(match[2]) : 50);
+                
+                const fileLower = fileRaw.toLowerCase();
+                const baseLower = fileLower.split("/").pop();
+                
+                // Target Validation: Must match an indexed repository file path or basename!
+                const targetPath = Array.from(activeRepoFiles).find(f => {
+                    const fLower = f.toLowerCase();
+                    return fLower === fileLower || fLower.endsWith("/" + fileLower) || fLower.split("/").pop() === baseLower;
+                });
+
+                if (targetPath) {
+                    const displayStr = hasExplicitLine ? (match[3] ? `${fileRaw}:${start}-${end}` : `${fileRaw}:${start}`) : fileRaw;
+                    if (!citations.some(c => c.file === targetPath && c.start === start && c.end === end)) {
+                        citations.push({
+                            file: targetPath,
+                            display: displayStr,
+                            start,
+                            end,
+                            isLineSpecific: hasExplicitLine
+                        });
+                    }
+                }
+            }
+
+            // Pattern 2: Python dot-notation module path references (e.g. requests.models or src.requests.sessions)
+            const dotRegex = /\b([a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+)\b/g;
+            while ((match = dotRegex.exec(cleanText)) !== null) {
+                const dotPath = match[1].toLowerCase();
+                if (dotPath.endsWith(".py")) continue; // Handled by Pattern 1
+                
+                const targetPath = Array.from(activeRepoFiles).find(f => {
+                    const cleanF = f.toLowerCase().replace(/\.py$/, "");
+                    return cleanF === dotPath || cleanF.endsWith("." + dotPath) || cleanF.replace(/\//g, ".") === dotPath || cleanF.replace(/\//g, ".").endsWith("." + dotPath);
+                });
+
+                if (targetPath) {
+                    if (!citations.some(c => c.file === targetPath)) {
+                        citations.push({
+                            file: targetPath,
+                            display: match[1],
+                            start: 1,
+                            end: 50,
+                            isLineSpecific: false
+                        });
+                    }
+                }
+            }
+
+            return citations;
+        }
+    </script>
+</body>
+</html>

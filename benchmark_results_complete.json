@@ -1,0 +1,3272 @@
+{
+  "openai/gpt-oss-120b": [
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 1,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 3,
+      "total_tool_calls": 2,
+      "latency_sec": 42.24,
+      "answer_preview": "`requests.api.get` is a convenience wrapper that sends an HTTP **GET** request.\n\n* It is defined in **`src/requests/api.py`** (lines\u202f74\u201187)\u3010/src/requests/api.py:L74-L87\u3011.  \n* The function\u2019s docstring states that it **\u201cSends a GET request.\u201d** It accep",
+      "full_answer": "`requests.api.get` is a convenience wrapper that sends an HTTP **GET** request.\n\n* It is defined in **`src/requests/api.py`** (lines\u202f74\u201187)\u3010/src/requests/api.py:L74-L87\u3011.  \n* The function\u2019s docstring states that it **\u201cSends a GET request.\u201d** It accepts:\n  * `url` \u2013 the target URL,\n  * optional `params` \u2013 data to be placed in the query string,\n  * any additional keyword arguments that the lower\u2011level `request` function supports.\n* Internally, it simply forwards the call to the generic `request` helper, passing the HTTP method name `\"get\"` along with the supplied arguments:\n\n```python\nreturn request(\"get\", url, params=params, **kwargs)\n```\n\n* The `request` helper (also in `src/requests/api.py`) creates a temporary `Session`, calls `session.request(...)`, and returns the resulting **`Response`** object. Consequently, `requests.api.get` returns a `Response` instance representing the server\u2019s reply to the GET request.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 95,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 2,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 4,
+      "total_tool_calls": 3,
+      "latency_sec": 54.45,
+      "answer_preview": "`requests.api.get` is a thin convenience wrapper that sends an HTTP **GET** request and returns the resulting `Response` object.\n\n* It is defined in **`src/requests/api.py`** lines **74\u201187**\u30102\u2020L70-L87\u3011.  \n* The function signature is  \n\n```python\ndef ",
+      "full_answer": "`requests.api.get` is a thin convenience wrapper that sends an HTTP **GET** request and returns the resulting `Response` object.\n\n* It is defined in **`src/requests/api.py`** lines **74\u201187**\u30102\u2020L70-L87\u3011.  \n* The function signature is  \n\n```python\ndef get(\n    url: _t.UriType,\n    params: _t.ParamsType = None,\n    **kwargs: Unpack[_t.GetKwargs]\n) -> Response:\n```\n\n* Inside, it simply forwards the call to the lower\u2011level `request` helper, passing the HTTP method name `\"get\"` together with the supplied `url`, optional query\u2011string `params`, and any additional keyword arguments:\n\n```python\nreturn request(\"get\", url, params=params, **kwargs)\n```\n\n* The `request` function (defined earlier in the same file, lines\u202f20\u201171) creates a temporary `Session` object, calls `session.request(...)` with the given method and arguments, and returns the `Response` produced by the server\u30103\u2020L20-L33\u3011.\n\nTherefore, `requests.api.get`:\n\n1. Accepts a URL, optional query parameters, and any extra request options.  \n2. Calls `request(\"get\", \u2026)` which opens a `Session`, sends the GET request, and closes the session automatically.  \n3. Returns the `Response` object representing the server\u2019s reply.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 100,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 3,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 4,
+      "total_tool_calls": 3,
+      "latency_sec": 58.1,
+      "answer_preview": "`requests.api.get` is a thin convenience wrapper that issues an HTTP **GET** request.\n\n* It is defined in **src/requests/api.py** (lines\u202f74\u201187) as:\n\n```python\ndef get(\n    url: _t.UriType, params: _t.ParamsType = None, **kwargs: Unpack[_t.GetKwargs]\n",
+      "full_answer": "`requests.api.get` is a thin convenience wrapper that issues an HTTP **GET** request.\n\n* It is defined in **src/requests/api.py** (lines\u202f74\u201187) as:\n\n```python\ndef get(\n    url: _t.UriType, params: _t.ParamsType = None, **kwargs: Unpack[_t.GetKwargs]\n) -> Response:\n    \"\"\"Sends a GET request.\n\n    :param url: URL for the new Request object.\n    :param params: (optional) Dictionary, list of tuples or bytes to send\n        in the query string for the Request.\n    :param **kwargs: Optional arguments that ``request`` takes.\n    :return: Response object\n    \"\"\"\n    return request(\"get\", url, params=params, **kwargs)\n```\n\n* The function simply forwards its arguments to the lower\u2011level `request` helper, passing the HTTP method string `\"get\"` along with the target **url**, any query\u2011string **params**, and any additional keyword arguments (`**kwargs`) that the generic `request` function accepts (`src/requests/api.py` lines\u202f24\u201171)\u3010src/requests/api.py:L24-L71\u3011.\n\n* `request` creates a temporary `Session`, calls `session.request(...)`, and returns the resulting `Response` object, ensuring the session is closed after the call\u3010src/requests/api.py:L70-L73\u3011.\n\n**In summary:** `requests.api.get` sends a GET request to the supplied URL (optionally with query parameters and other request options) and returns the `Response` object produced by the underlying `request` implementation.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 95,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 88.22,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 400,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 200
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 260,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 130
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 150,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 30
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 250,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 40
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 86.27,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 40
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 50,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 30,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 12
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 87.73,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 40
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 55,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 45
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 87.6,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          3,
+          "get_callers",
+          {
+            "function_id": 179
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 660,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 540
+          }
+        ],
+        [
+          5,
+          "get_callers",
+          {
+            "function_id": 179
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 830,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 740
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 88.12,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          3,
+          "get_callers",
+          {
+            "function_id": 179
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 720,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 640
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 680,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 650
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 800,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 750
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 87.01,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 405,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 310,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 295
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 280,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 250
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 320,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 300
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 86.73,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request fails error handling",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 1180,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 1130
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "def request",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 750,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 630
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "HTTPError",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 150,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 89.04,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          3,
+          "get_callers",
+          {
+            "function_id": 179
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "Session().send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "Session().request",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          6,
+          "get_callers",
+          {
+            "function_id": 180
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 82.6,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 80
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 260,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.05,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 80
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "class Session",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 83.31,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 80
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 260,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.01,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 405,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 310,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 300
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 280,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 250
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 310,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 295
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 85.23,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 405,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 310,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 295
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 280,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 260
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 315,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 295
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 99.4,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request fails error handling",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 760,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 630
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 850,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 748
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 720,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 660
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "raise_for_status",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "except",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 89.14,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request fails error handling",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 760,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 630
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 850,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 740
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "raise for status error handling request fails",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "except RequestException send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "def request",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.52,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 150,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 100
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 350,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 250
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 340,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 320
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 30
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 85.11,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 130,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 100
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "auth parameter request",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 380,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 260
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.45,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 130,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 100
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 350,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 250
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 340,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 320
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 30
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 85.29,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "stream large file download requests",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 970,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 910
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 1030,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 970
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "def generate",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 960,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 930
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 990,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 960
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 88.74,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "streaming large file downloads",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 960,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 900
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 960
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "def generate",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 960,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 930
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 960
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 372.58,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "streaming large file downloads",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 960,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 900
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 960
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "def generate",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 940,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 920
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 980,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 940
+          }
+        ]
+      ]
+    }
+  ],
+  "openai/gpt-oss-20b": [
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 1,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 67.29,
+      "answer_preview": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply forwards its arguments to the lower\u2011level `request` helper, specifying the HTTP method as `\"get\"`.\n\n```python\ndef get(\n    url: _t.UriType, param",
+      "full_answer": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply forwards its arguments to the lower\u2011level `request` helper, specifying the HTTP method as `\"get\"`.\n\n```python\ndef get(\n    url: _t.UriType, params: _t.ParamsType = None, **kwargs: Unpack[_t.GetKwargs]\n) -> Response:\n    r\"\"\"Sends a GET request.\n\n    :param url: URL for the new :class:`Request` object.\n    :param params: (optional) Dictionary, list of tuples or bytes to send\n        in the query string for the :class:`Request`.\n    :param **kwargs: Optional arguments that ``request`` takes.\n    :return: :class:`Response <Response>` object\n    :rtype: requests.Response\n    \"\"\"\n\n    return request(\"get\", url, params=params, **kwargs)\n```\n\n* **Location**: `src/requests/api.py`, lines 70\u201190.  \n* **Behavior**:  \n  * Accepts a URL, optional query parameters, and any additional keyword arguments accepted by `request`.  \n  * Calls the internal `request` function with the method `\"get\"` and passes along the URL, parameters, and other kwargs.  \n  * Returns the `Response` object produced by `request`.  \n\nThus, `requests.api.get` is a thin wrapper that simplifies making GET requests by pre\u2011setting the HTTP method.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "def request(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 2,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 66.14,
+      "answer_preview": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply delegates to the lower\u2011level `request` helper, passing the method name `\"get\"` along with the URL, optional query parameters, and any additional ",
+      "full_answer": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply delegates to the lower\u2011level `request` helper, passing the method name `\"get\"` along with the URL, optional query parameters, and any additional keyword arguments. The function returns the `Response` object produced by `request`.\n\n```python\ndef get(\n    url: _t.UriType, params: _t.ParamsType = None, **kwargs: Unpack[_t.GetKwargs]\n) -> Response:\n    r\"\"\"Sends a GET request.\n\n    :param url: URL for the new :class:`Request` object.\n    :param params: (optional) Dictionary, list of tuples or bytes to send\n        in the query string for the :class:`Request`.\n    :param **kwargs: Optional arguments that ``request`` takes.\n    :return: :class:`Response <Response>` object\n    :rtype: requests.Response\n    \"\"\"\n\n    return request(\"get\", url, params=params, **kwargs)\n```\n\n- **Location**: `src/requests/api.py`, lines 70\u201190.  \n- **Behavior**: Calls `request(\"get\", url, params=params, **kwargs)` which creates a `Session`, sends the request, and returns the resulting `Response`.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 1,
+      "tier": "Single-hop",
+      "question": "What does the function requests.api.get do?",
+      "run_idx": 3,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 67.53,
+      "answer_preview": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply delegates to the lower\u2011level `request` helper, passing the method name `\"get\"` along with the URL, optional query parameters, and any additional ",
+      "full_answer": "The `requests.api.get` function is a convenience wrapper that sends an HTTP **GET** request.  \nIt simply delegates to the lower\u2011level `request` helper, passing the method name `\"get\"` along with the URL, optional query parameters, and any additional keyword arguments. The function returns the `Response` object produced by `request`.\n\n```python\ndef get(\n    url: _t.UriType, params: _t.ParamsType = None, **kwargs: Unpack[_t.GetKwargs]\n) -> Response:\n    r\"\"\"Sends a GET request.\n\n    :param url: URL for the new :class:`Request` object.\n    :param params: (optional) Dictionary, list of tuples or bytes to send\n        in the query string for the :class:`Request`.\n    :param **kwargs: Optional arguments that ``request`` takes.\n    :return: :class:`Response <Response>` object\n    :rtype: requests.Response\n    \"\"\"\n\n    return request(\"get\", url, params=params, **kwargs)\n```\n\n- **Location**: `src/requests/api.py`, lines 70\u201190.  \n- **Behavior**: Calls `request(\"get\", url, params=params, **kwargs)` which creates a `Session`, sends the request, and returns the resulting `Response`.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.api.get",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 90,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 1,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 66.74,
+      "answer_preview": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type defined in `src/requests/structures.py`.  \nIts purpose is to behave like a normal dictionary but treat keys in a case\u2011insensitive way while stil",
+      "full_answer": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type defined in `src/requests/structures.py`.  \nIts purpose is to behave like a normal dictionary but treat keys in a case\u2011insensitive way while still preserving the original key\u2019s case for iteration and representation.\n\nKey points from the implementation:\n\n| Feature | Code reference | Explanation |\n|---------|----------------|-------------|\n| **Case\u2011insensitive lookup** | `def __getitem__(self, key: str) -> _VT: return self._store[key.lower()][1]` (lines 73\u201175) | Keys are stored in the internal `_store` under their lower\u2011cased form, so `cid['Accept']` and `cid['aCCEPT']` refer to the same entry. |\n| **Preserve original key case** | `self._store[key.lower()] = (key, value)` in `__setitem__` (lines 69\u201171) | The tuple `(original_key, value)` is kept, allowing iteration to return the key in the case it was last set. |\n| **Iteration returns original case** | `def __iter__(self) -> Iterator[str]: return (casedkey for casedkey, _ in self._store.values())` (lines 77\u201179) | `iter(cid)` yields the keys exactly as they were last inserted. |\n| **Length** | `def __len__(self) -> int: return len(self._store)` (lines 81\u201182) | Standard mapping length. |\n| **Update from mapping or iterable** | `def __init__(self, data: Mapping[str, _VT] | Iterable[tuple[str, _VT]] | None = None, **kwargs: _VT) -> None:` (lines 65\u201170) | The constructor accepts a mapping or iterable of key/value pairs and optional keyword arguments, delegating to `update`. |\n| **Deletion** | `def __delitem__(self, key: str) -> None: del self._store[key.lower()]` (lines 83\u201184) | Removes the entry regardless of key case. |\n| **Additional helpers** | `lower_items`, `copy`, etc. (not shown in the snippet) | Provide convenience methods for working with the underlying data. |\n\nIn short, `CaseInsensitiveDict` lets you store and look up values without worrying about the case of the keys, while still keeping the original key casing for display or iteration. This is useful in HTTP header handling, where header names are case\u2011insensitive but the original case may be desired for logging or debugging.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 45
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 2,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 66.76,
+      "answer_preview": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type that behaves like a normal Python `dict` but treats string keys case\u2011insensitively.  \nIts key features are:\n\n| Feature | How it\u2019s implemented | ",
+      "full_answer": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type that behaves like a normal Python `dict` but treats string keys case\u2011insensitively.  \nIts key features are:\n\n| Feature | How it\u2019s implemented | Code reference |\n|---------|----------------------|----------------|\n| **Construction** | Accepts a mapping or iterable of key/value pairs and optional keyword arguments. It stores the data in an `OrderedDict` called `_store`. | `__init__` \u2013 lines 49\u201158 (`src/requests/structures.py:L49-L58`) |\n| **Key storage** | Keys are stored in `_store` using the lower\u2011cased form as the lookup key, but the original key case is preserved in the value tuple `(original_key, value)`. | `__setitem__` \u2013 lines 61\u201164 (`src/requests/structures.py:L61-L64`) |\n| **Lookup** | `__getitem__` retrieves the value by lower\u2011casing the lookup key. | `__getitem__` \u2013 lines 66\u201168 (`src/requests/structures.py:L66-L68`) |\n| **Deletion** | `__delitem__` removes the entry using the lower\u2011cased key. | `__delitem__` \u2013 lines 70\u201172 (`src/requests/structures.py:L70-L72`) |\n| **Iteration** | Iterating over the dict yields the *original* key case, preserving insertion order. | `__iter__` \u2013 lines 74\u201176 (`src/requests/structures.py:L74-L76`) |\n| **Length** | `__len__` returns the number of stored items. | `__len__` \u2013 lines 78\u201180 (`src/requests/structures.py:L78-L80`) |\n| **Lower\u2011case view** | `lower_items()` returns an iterator over `(lowercased_key, value)` pairs. | `lower_items` \u2013 lines 82\u201184 (`src/requests/structures.py:L82-L84`) |\n| **Copy** | `copy()` creates a shallow copy of the dictionary. | `copy` \u2013 lines 86\u201188 (`src/requests/structures.py:L86-L88`) |\n\n**Behavior summary**\n\n* All key lookups (`__getitem__`, `in`, `get`) are case\u2011insensitive: `d['Accept']`, `d['accept']`, and `d['ACCEPT']` refer to the same entry.  \n* The dictionary remembers the *last* case used when setting a key, so iteration (`for k in d`) yields that case.  \n* If two keys that differ only by case are inserted, the behavior is undefined (the last one wins).  \n\nThis implementation is used throughout the `requests` library to store HTTP headers, cookies, and other string\u2011keyed data where case should not matter.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 45
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 2,
+      "tier": "Single-hop",
+      "question": "What does CaseInsensitiveDict do in requests.structures?",
+      "run_idx": 3,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 5,
+      "total_tool_calls": 4,
+      "latency_sec": 66.11,
+      "answer_preview": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type defined in `src/requests/structures.py`.  \nIts purpose is to behave like a normal dictionary but treat keys in a case\u2011insensitive way while stil",
+      "full_answer": "**`CaseInsensitiveDict` \u2013 a case\u2011insensitive dictionary**\n\n`CaseInsensitiveDict` is a custom mapping type defined in `src/requests/structures.py`.  \nIts purpose is to behave like a normal dictionary but treat keys in a case\u2011insensitive way while still preserving the original key\u2019s case for iteration and representation.\n\nKey points from the implementation:\n\n| Feature | Code reference | Explanation |\n|---------|----------------|-------------|\n| **Storage** | `self._store = OrderedDict()` (line\u202f49) | Internally uses an `OrderedDict` that maps the *lower\u2011cased* key to a tuple of the original key and its value. |\n| **Setting a key** | `def __setitem__(self, key: str, value: _VT) -> None:` (lines\u202f55\u201158) | Stores the value under `key.lower()` but keeps the original key (`key`) in the tuple. |\n| **Getting a key** | `def __getitem__(self, key: str) -> _VT:` (lines\u202f60\u201162) | Looks up by `key.lower()` and returns the stored value. |\n| **Deleting a key** | `def __delitem__(self, key: str) -> None:` (lines\u202f64\u201166) | Deletes the entry using the lower\u2011cased key. |\n| **Iteration** | `def __iter__(self) -> Iterator[str]:` (lines\u202f68\u201170) | Yields the *original* cased keys in insertion order. |\n| **Length** | `def __len__(self) -> int:` (lines\u202f72\u201174) | Returns the number of stored items. |\n| **Case\u2011insensitive lookup** | `def __contains__(self, key: str) -> bool:` (lines\u202f76\u201178) | Uses `key.lower()` to check membership. |\n| **Copy** | `def copy(self) -> \"CaseInsensitiveDict[_VT]\":` (lines\u202f90\u201192) | Returns a shallow copy of the dictionary. |\n| **Lower\u2011case items** | `def lower_items(self) -> Iterator[tuple[str, _VT]]:` (lines\u202f84\u201186) | Yields `(lowercased_key, value)` pairs. |\n\nThe class also implements the full `MutableMapping` interface, so it can be used wherever a normal dictionary is expected, but with the added benefit that key lookups, deletions, and containment checks ignore case. The original key\u2019s case is preserved for iteration and when the dictionary is printed.\n\nIn short, `CaseInsensitiveDict` provides a dictionary\u2011like container that treats string keys case\u2011insensitively while keeping the original key casing for display and iteration.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "CaseInsensitiveDict requests.structures",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 45
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/structures.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 85.73,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "semantic_search",
+          {
+            "query": "send(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          3,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 830,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 750
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "Session.send(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 87.74,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "semantic_search",
+          {
+            "query": "send(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          3,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 830,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 750
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "Session.send(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 660,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 540
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 3,
+      "tier": "Multi-hop",
+      "question": "What functions in requests call or depend on Session.send?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 85.15,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "Session.send",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 187
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 840,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 740
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 800,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 770
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "Session.send(",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "send(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 83.51,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "def request(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 660,
+            "file_path": "src/requests/sessions.py",
+            "repo_id": 1,
+            "start_line": 540
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.63,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "def request(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "class Session",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 4,
+      "tier": "Multi-hop",
+      "question": "Trace how requests.post flows down to HTTPAdapter.send.",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.87,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "requests.post",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 110
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "def request(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 80,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 20
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/api.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "class Session",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 1,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 4,
+      "total_tool_calls": 3,
+      "latency_sec": 50.65,
+      "answer_preview": "The function **`extract_cookies_to_jar`** is invoked by the following functions/methods in the repository:\n\n| Caller | File | Line where the call occurs |\n|--------|------|----------------------------|\n| `build_response` (method of `HTTPAdapter`) | `",
+      "full_answer": "The function **`extract_cookies_to_jar`** is invoked by the following functions/methods in the repository:\n\n| Caller | File | Line where the call occurs |\n|--------|------|----------------------------|\n| `build_response` (method of `HTTPAdapter`) | `src/requests/adapters.py` | line\u202f395 |\n| `handle_401` (method of `HTTPDigestAuth`) | `src/requests/auth.py` | line\u202f304 |\n| `resolve_redirects` (method of `SessionRedirectMixin`) | `src/requests/sessions.py` | line\u202f267 |\n| `resolve_redirects` (method of `SessionRedirectMixin`) | `src/requests/sessions.py` | line\u202f303 |\n| `send` (method of `Session`) | `src/requests/sessions.py` | line\u202f797 |\n| `send` (method of `Session`) | `src/requests/sessions.py` | line\u202f799 |\n\nThese are the only callers identified by the static call\u2011graph query for `extract_cookies_to_jar`.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 410,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 2,
+      "status": "success",
+      "grounded": true,
+      "has_called_semantic_search": true,
+      "turns_used": 4,
+      "total_tool_calls": 3,
+      "latency_sec": 50.29,
+      "answer_preview": "The function **`extract_cookies_to_jar`** is invoked by the following functions/methods in the repository:\n\n| Caller | File | Line where the call occurs |\n|--------|------|----------------------------|\n| `build_response` (method of `HTTPAdapter`) | `",
+      "full_answer": "The function **`extract_cookies_to_jar`** is invoked by the following functions/methods in the repository:\n\n| Caller | File | Line where the call occurs |\n|--------|------|----------------------------|\n| `build_response` (method of `HTTPAdapter`) | `src/requests/adapters.py` | line\u202f395 |\n| `handle_401` (method of `HTTPDigestAuth`) | `src/requests/auth.py` | line\u202f304 |\n| `resolve_redirects` (method of `SessionRedirectMixin`) | `src/requests/sessions.py` | line\u202f267 |\n| `resolve_redirects` (method of `SessionRedirectMixin`) | `src/requests/sessions.py` | line\u202f303 |\n| `send` (method of `Session`) | `src/requests/sessions.py` | line\u202f797 |\n| `send` (method of `Session`) | `src/requests/sessions.py` | line\u202f799 |\n\nThese are the only callers identified by the static call\u2011graph analysis (`get_callers`) for the `extract_cookies_to_jar` function.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 410,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 5,
+      "tier": "Multi-hop",
+      "question": "Which functions call extract_cookies_to_jar?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 86.66,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_callers",
+          {
+            "function_id": 71
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 410,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 380
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar(",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "extract_cookies_to_jar(",
+            "repo_id": 1,
+            "top_k": 20
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 88.67,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request error handling",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "semantic_search",
+          {
+            "query": "raise_for_status()",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "raise_for_status(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "raise_for_status()",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "HTTPError",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "raise_for_status()",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 89.19,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request error handling",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 1180,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 1120
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "send(self, request",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "ConnectionError",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 760,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 620
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "raise RequestException",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 6,
+      "tier": "Ambiguous/Broad",
+      "question": "How does error handling work in this codebase when an HTTP request fails?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 86.83,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "HTTP request error handling",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 760,
+            "file_path": "src/requests/adapters.py",
+            "repo_id": 1,
+            "start_line": 620
+          }
+        ],
+        [
+          3,
+          "semantic_search",
+          {
+            "query": "raise_for_status",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "raise_for_status()",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "HTTPError",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 1180,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 1130
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 89.73,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 100
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "class AuthBase",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "auth parameter requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "auth=",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 83.6,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 400,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 200
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "auth",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 120,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 70
+          }
+        ],
+        [
+          6,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 120
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 7,
+      "tier": "Ambiguous/Broad",
+      "question": "How does authentication work in requests?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.28,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "authentication requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 200,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 400,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 200
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 400,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 1
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 140,
+            "file_path": "src/requests/auth.py",
+            "repo_id": 1,
+            "start_line": 100
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "class AuthBase",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 1,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.76,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "stream large file download requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 900
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 970,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 910
+          }
+        ],
+        [
+          4,
+          "semantic_search",
+          {
+            "query": "stream=True requests download large file",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          5,
+          "get_file",
+          {
+            "end_line": 1040,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 950
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "stream=True",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 2,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.54,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "stream large file download requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 900
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 970,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 910
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 1040,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 970
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "def generate()",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "def generate(",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ]
+      ]
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "question_id": 8,
+      "tier": "Ambiguous/Broad",
+      "question": "How does requests handle streaming large file downloads?",
+      "run_idx": 3,
+      "status": "budget_exhausted",
+      "grounded": false,
+      "has_called_semantic_search": true,
+      "turns_used": 6,
+      "total_tool_calls": 6,
+      "latency_sec": 84.66,
+      "answer_preview": "Error: Budget exhausted before agent reached a final answer.",
+      "full_answer": "Error: Budget exhausted before agent reached a final answer.",
+      "trace_summary": [
+        [
+          1,
+          "semantic_search",
+          {
+            "query": "stream large file download requests",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          2,
+          "get_file",
+          {
+            "end_line": 1000,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 900
+          }
+        ],
+        [
+          3,
+          "get_file",
+          {
+            "end_line": 970,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 910
+          }
+        ],
+        [
+          4,
+          "get_file",
+          {
+            "end_line": 1040,
+            "file_path": "src/requests/models.py",
+            "repo_id": 1,
+            "start_line": 970
+          }
+        ],
+        [
+          5,
+          "semantic_search",
+          {
+            "query": "generate() requests models.py",
+            "repo_id": 1,
+            "top_k": 5
+          }
+        ],
+        [
+          6,
+          "semantic_search",
+          {
+            "query": "def generate(",
+            "repo_id": 1,
+            "top_k": 10
+          }
+        ]
+      ]
+    }
+  ]
+}
