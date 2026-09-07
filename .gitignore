@@ -1,5 +1,6 @@
 # Environment & Secrets
 .env
+un_ness/
 .env.*
 !.env.example
 

@@ -257,6 +257,68 @@ def get_repository_status(repo_id: int):
     finally:
         session.close()
 
+@app.delete("/api/repos/{repo_id}")
+def delete_repository(repo_id: int):
+    """Delete a repository and all indexed data, including its local clone."""
+    session = db.get_session()
+    clone_path = None
+    try:
+        repo = session.query(db.Repo).filter(db.Repo.id == repo_id).first()
+        if not repo:
+            raise HTTPException(status_code=404, detail="Repository not found.")
+
+        active_statuses = {"pending", "cloning", "parsing", "embedding"}
+        if repo.status in active_statuses:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot delete repository while indexing is in progress (status: '{repo.status}')."
+            )
+
+        clone_root = os.path.realpath(ingestion.TEMP_CLONE_DIR)
+        candidate = repo.clone_path or os.path.join(ingestion.TEMP_CLONE_DIR, repo.name)
+        resolved_candidate = os.path.realpath(candidate)
+        if os.path.dirname(resolved_candidate) == clone_root:
+            clone_path = resolved_candidate
+
+        function_ids = [row[0] for row in session.query(db.Function.id).filter(db.Function.repo_id == repo_id).all()]
+        if function_ids:
+            session.query(db.FunctionEmbedding).filter(db.FunctionEmbedding.function_id.in_(function_ids)).delete(synchronize_session=False)
+            session.query(db.CallEdge).filter(
+                (db.CallEdge.caller_function_id.in_(function_ids)) |
+                (db.CallEdge.callee_function_id.in_(function_ids))
+            ).delete(synchronize_session=False)
+            session.query(db.UnresolvedCall).filter(db.UnresolvedCall.caller_function_id.in_(function_ids)).delete(synchronize_session=False)
+            session.query(db.Function).filter(db.Function.id.in_(function_ids)).delete(synchronize_session=False)
+
+        session.delete(repo)
+        session.commit()
+    except HTTPException:
+        session.rollback()
+        raise
+    except Exception as exc:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete repository: {exc}")
+    finally:
+        session.close()
+
+    cleanup_errors = []
+    if clone_path:
+        try:
+            ingestion.safe_rmtree(clone_path)
+        except Exception as exc:
+            cleanup_errors.append(str(exc))
+    metadata_path = os.path.join(ingestion.METADATA_DIR, f"{repo.name}.json")
+    try:
+        if os.path.isfile(metadata_path):
+            os.remove(metadata_path)
+    except OSError as exc:
+        cleanup_errors.append(str(exc))
+
+    response = {"repo_id": repo_id, "status": "deleted", "message": "Repository and indexed data deleted."}
+    if cleanup_errors:
+        response["cleanup_warning"] = "Database rows were deleted, but local file cleanup was incomplete: " + "; ".join(cleanup_errors)
+    return response
+
 @app.get("/api/repos/{repo_id}/files")
 def get_repository_files(repo_id: int):
     session = db.get_session()

@@ -2,6 +2,10 @@
 
 Semantic Codebase Search Agent indexes a public GitHub Python repository and lets you ask natural-language questions about its implementation. It combines function-level embeddings, a static call graph, and a Groq tool-calling agent to return answers grounded in source locations and file:line citations.
 
+![SemanticSearch chat interface after indexing a repository](dashboard_ss.png)
+
+_The chat interface after indexing a repository: suggested questions, live status badges, and a grounded Q&A flow._
+
 ## How It Works
 
 ```text

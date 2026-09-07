@@ -170,6 +170,34 @@
             gap: 6px;
         }
 
+        .repo-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .repo-delete {
+            margin-left: auto;
+            border: 0;
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 4px;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+        }
+
+        .repo-item:hover .repo-delete,
+        .repo-delete:focus-visible {
+            opacity: 1;
+        }
+
+        .repo-delete:hover {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.12);
+        }
+
         .repo-item:hover {
             background: rgba(255, 255, 255, 0.04);
             border-color: rgba(255, 255, 255, 0.15);
@@ -383,6 +411,27 @@
             padding: 0;
             border-radius: 0;
             font-size: 0.85rem;
+        }
+
+        .message-bubble table {
+            border-collapse: collapse;
+            margin: 14px 0;
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .message-bubble th,
+        .message-bubble td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .message-bubble th {
+            background-color: rgba(99, 102, 241, 0.14);
+            font-weight: 600;
         }
 
         /* Citations list */
@@ -1045,7 +1094,12 @@
                     item.className = `repo-item ${repo.id === activeRepoId ? 'active' : ''}`;
                     item.dataset.id = repo.id;
                     item.innerHTML = `
-                        <div class="repo-title">${escapeHTML(repo.name)}</div>
+                        <div class="repo-item-header">
+                            <div class="repo-title">${escapeHTML(repo.name)}</div>
+                            <button class="repo-delete" type="button" aria-label="Delete ${escapeHTML(repo.name)}" title="Delete repository">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2m-6 5v6m4-6v6"></path></svg>
+                            </button>
+                        </div>
                         <div class="repo-url">${escapeHTML(repo.url)}</div>
                         <div class="repo-meta">
                             <span class="status-badge ${repo.status}">${repo.status}</span>
@@ -1053,6 +1107,10 @@
                         </div>
                     `;
                     item.addEventListener("click", () => selectRepo(repo.id));
+                    item.querySelector(".repo-delete").addEventListener("click", (event) => {
+                        event.stopPropagation();
+                        deleteRepository(repo);
+                    });
                     reposList.appendChild(item);
                 });
 
@@ -1064,6 +1122,34 @@
                 }
             } catch (err) {
                 showToast("Error updating repositories list.");
+            }
+        }
+
+        async function deleteRepository(repo) {
+            if (!window.confirm(`Delete '${repo.name}'? This cannot be undone.`)) return;
+
+            const item = document.querySelector(`.repo-item[data-id="${repo.id}"]`);
+            if (item) item.remove();
+            try {
+                const response = await fetch(`${API_BASE}/repos/${repo.id}`, { method: "DELETE" });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || "Failed to delete repository.");
+
+                if (activeRepoId === repo.id) {
+                    if (pollInterval) clearTimeout(pollInterval);
+                    activeRepoId = null;
+                    activeRepoStatus = null;
+                    activeRepoFiles = new Set();
+                    headerRepoName.textContent = "Select a repository";
+                    headerRepoUrl.textContent = "";
+                    enableChat(false);
+                    chatBody.innerHTML = `<div class="empty-state" id="emptyState"><h3>Index a repository to begin</h3><p>Choose a repository from the sidebar or index a new one to explore its code.</p></div>`;
+                }
+                await fetchReposList();
+                showToast(data.message || "Repository deleted.");
+            } catch (error) {
+                await fetchReposList();
+                showToast(error.message || "Failed to delete repository.");
             }
         }
 
@@ -1210,7 +1296,7 @@
             chatInput.placeholder = "Agent is thinking...";
 
             // Append loading indicator bubble
-            const loadingBubble = appendMessage("assistant", `<div style="display:flex; align-items:center; gap:8px;"><div class="spinner" style="width:16px; height:16px; border-width:2px;"></div>Agent is analyzing codebase path...</div>`);
+            const loadingBubble = appendMessage("assistant", `<div style="display:flex; align-items:center; gap:8px;"><div class="spinner" style="width:16px; height:16px; border-width:2px;"></div>Agent is analyzing codebase path...</div>`, null, null, null, true);
 
             try {
                 const response = await fetch(`${API_BASE}/repos/${activeRepoId}/ask`, {
@@ -1223,21 +1309,21 @@
                 loadingBubble.remove(); // Remove spinner
 
                 if (!response.ok) {
-                    appendMessage("assistant", `<div style="color: var(--error);">Error running agent: ${data.detail || "Unknown error"}</div>`);
+                    appendMessage("assistant", `<div style="color: var(--error);">Error running agent: ${escapeHTML(data.detail || "Unknown error")}</div>`, null, null, null, true);
                 } else {
                     // Render response bubble with grounded badge and status
-                    appendMessage("assistant", formatMarkdown(data.answer), data.trace, data.grounded, data.status);
+                    appendMessage("assistant", data.answer, data.trace, data.grounded, data.status);
                 }
             } catch (err) {
                 loadingBubble.remove();
-                appendMessage("assistant", `<div style="color: var(--error);">Network connection lost to search agent.</div>`);
+                appendMessage("assistant", `<div style="color: var(--error);">Network connection lost to search agent.</div>`, null, null, null, true);
             } finally {
                 enableChat(true);
             }
         }
 
         // Append bubble helper
-        function appendMessage(role, htmlContent, trace = null, grounded = null, status = null) {
+        function appendMessage(role, content, trace = null, grounded = null, status = null, trustedHtml = false) {
             const row = document.createElement("div");
             row.className = `message-row ${role}`;
             
@@ -1268,9 +1354,10 @@
                     `;
                 }
 
-                bubble.innerHTML = badgeHTML + bannerHTML + htmlContent;
+                const renderedContent = trustedHtml ? content : renderMarkdown(content);
+                bubble.innerHTML = badgeHTML + bannerHTML + renderedContent;
             } else {
-                bubble.innerHTML = htmlContent;
+                bubble.textContent = content;
             }
             
             row.appendChild(bubble);
@@ -1279,7 +1366,7 @@
             // Add citations and trace logs if assistant message
             if (role === "assistant") {
                 // Parse and attach citation badges aligned with backend check_is_grounded_v2
-                const citations = extractCitations(htmlContent);
+                const citations = trustedHtml ? [] : extractCitations(content);
                 if (citations.length > 0) {
                     const citContainer = document.createElement("div");
                     citContainer.className = "citations-container";
@@ -1412,16 +1499,94 @@
             }
         });
 
-        // Simple Markdown parsing helper for code blocks and paragraphs
-        function formatMarkdown(text) {
-            // Replace preformatted blocks
-            text = text.replace(/```python([\s\S]*?)```/g, '<pre><code class="language-python">$1</code></pre>');
-            text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-            // Replace inline codes
-            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-            // Format newlines into paragraphs
-            const lines = text.split("\n\n");
-            return lines.map(l => `<p>${l.replace(/\n/g, '<br>')}</p>`).join("");
+        // Small, intentionally limited Markdown renderer for trusted assistant output.
+        // Every text fragment is escaped before markup is added, so model output cannot inject HTML.
+        function renderInlineMarkdown(text) {
+            const codeSpans = [];
+            let escaped = escapeHTML(text).replace(/`([^`]+)`/g, (_, code) => {
+                const token = `@@INLINE_CODE_${codeSpans.length}@@`;
+                codeSpans.push(`<code>${code}</code>`);
+                return token;
+            });
+
+            escaped = escaped.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+            escaped = escaped.replace(/@@INLINE_CODE_(\d+)@@/g, (_, index) => codeSpans[Number(index)]);
+            return escaped;
+        }
+
+        function isMarkdownTableSeparator(line) {
+            const cells = line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|");
+            return cells.length > 0 && cells.every(cell => /^\s*:?-{3,}:?\s*$/.test(cell));
+        }
+
+        function splitMarkdownTableRow(line) {
+            return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
+        }
+
+        function renderMarkdownTable(lines, startIndex) {
+            const headers = splitMarkdownTableRow(lines[startIndex]);
+            let index = startIndex + 2;
+            const rows = [];
+            while (index < lines.length && lines[index].includes("|") && lines[index].trim() !== "") {
+                rows.push(splitMarkdownTableRow(lines[index]));
+                index += 1;
+            }
+
+            const headHTML = headers.map(cell => `<th>${renderInlineMarkdown(cell)}</th>`).join("");
+            const bodyHTML = rows.map(row => {
+                const cells = headers.map((_, cellIndex) => `<td>${renderInlineMarkdown(row[cellIndex] || "")}</td>`).join("");
+                return `<tr>${cells}</tr>`;
+            }).join("");
+            return { html: `<table><thead><tr>${headHTML}</tr></thead><tbody>${bodyHTML}</tbody></table>`, nextIndex: index };
+        }
+
+        function renderMarkdown(text) {
+            const lines = String(text || "").replace(/\r\n?/g, "\n").split("\n");
+            const blocks = [];
+            let paragraph = [];
+            let index = 0;
+
+            const flushParagraph = () => {
+                if (paragraph.length > 0) {
+                    blocks.push(`<p>${paragraph.map(renderInlineMarkdown).join("<br>")}</p>`);
+                    paragraph = [];
+                }
+            };
+
+            while (index < lines.length) {
+                const line = lines[index];
+                if (line.trim().startsWith("```")) {
+                    flushParagraph();
+                    const language = line.trim().slice(3).trim().split(/\s+/)[0] || "";
+                    const codeLines = [];
+                    index += 1;
+                    while (index < lines.length && !lines[index].trim().startsWith("```")) {
+                        codeLines.push(lines[index]);
+                        index += 1;
+                    }
+                    if (index < lines.length) index += 1;
+                    const languageClass = language ? ` class="language-${escapeHTML(language)}"` : "";
+                    blocks.push(`<pre><code${languageClass}>${escapeHTML(codeLines.join("\n"))}</code></pre>`);
+                    continue;
+                }
+
+                if (line.includes("|") && index + 1 < lines.length && isMarkdownTableSeparator(lines[index + 1])) {
+                    flushParagraph();
+                    const table = renderMarkdownTable(lines, index);
+                    blocks.push(table.html);
+                    index = table.nextIndex;
+                    continue;
+                }
+
+                if (line.trim() === "") {
+                    flushParagraph();
+                } else {
+                    paragraph.push(line);
+                }
+                index += 1;
+            }
+            flushParagraph();
+            return blocks.join("");
         }
 
         // Priority 1, Fix 4: Parse citation tags aligned with backend check_is_grounded_v2
