@@ -406,6 +406,7 @@ def _ask_agent_groq(question: str, repo_id: int, max_turns: int, disable_fallbac
             if is_schema_error:
                 print(f"[WARNING] Groq rejected a malformed tool call; using grounded fallback: {exc}")
                 fallback = run_degraded_semantic_fallback(question, repo_id, reason="tool_schema_validation_error")
+                fallback["fallback_reason"] = "tool_schema_validation_error"
                 fallback["provider_error"] = "Groq rejected a tool call because required arguments were invalid or missing."
                 fallback["trace"] = trace + fallback.get("trace", [])
                 return fallback
