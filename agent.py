@@ -381,7 +381,29 @@ def _ask_agent_groq(question: str, repo_id: int, max_turns: int, disable_fallbac
     total_calls = 0
     max_calls = 10
     for turn in range(max_turns):
-        response = client.chat.completions.create(model=model_name, messages=messages, tools=get_groq_tools(), tool_choice="required" if turn == 0 and not disable_fallback else "auto", temperature=0)
+        try:
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=messages,
+                tools=get_groq_tools(),
+                tool_choice="required" if turn == 0 and not disable_fallback else "auto",
+                temperature=0,
+            )
+        except Exception as exc:
+            error_text = str(exc).lower()
+            is_schema_error = (
+                "tool_use_failed" in error_text
+                or ("400" in error_text and "tool" in error_text)
+                or "invalid tool call" in error_text
+            )
+            if is_schema_error:
+                print(f"[WARNING] Groq rejected a malformed tool call; using grounded fallback: {exc}")
+                fallback = run_degraded_semantic_fallback(question, repo_id)
+                fallback["fallback_reason"] = "tool_schema_validation_error"
+                fallback["provider_error"] = "Groq rejected a tool call because required arguments were invalid or missing."
+                fallback["trace"] = trace + fallback.get("trace", [])
+                return fallback
+            raise
         message = response.choices[0].message
         if not message.tool_calls:
             answer = message.content or ""
