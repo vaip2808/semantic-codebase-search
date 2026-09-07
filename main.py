@@ -11,7 +11,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime, UTC
 
-from sementic_cb_search import db, ingestion, parser, embeddings, agent
+try:
+    import db, ingestion, parser, embeddings, agent
+except ImportError:
+    from sementic_cb_search import db, ingestion, parser, embeddings, agent
 
 app = FastAPI(
     title="Semantic Codebase Search Agent",

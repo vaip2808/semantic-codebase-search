@@ -3,9 +3,9 @@ import os
 import sys
 from datetime import datetime, UTC
 try:
-    from sementic_cb_search.db import get_session, Repo, Function, CallEdge, UnresolvedCall
-except ImportError:
     from db import get_session, Repo, Function, CallEdge, UnresolvedCall
+except ImportError:
+    from sementic_cb_search.db import get_session, Repo, Function, CallEdge, UnresolvedCall
 
 class RepoASTVisitor(ast.NodeVisitor):
     def __init__(self):

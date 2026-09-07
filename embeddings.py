@@ -3,9 +3,9 @@ import time
 from google import genai
 from google.genai import types
 try:
-    from sementic_cb_search.db import get_session, Repo, Function, FunctionEmbedding, IS_POSTGRES
-except ImportError:
     from db import get_session, Repo, Function, FunctionEmbedding, IS_POSTGRES
+except ImportError:
+    from sementic_cb_search.db import get_session, Repo, Function, FunctionEmbedding, IS_POSTGRES
 
 EMBEDDING_MODEL = "gemini-embedding-2"
 BATCH_SIZE = 25

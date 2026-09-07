@@ -5,9 +5,9 @@ import re
 from groq import Groq
 
 try:
-    from sementic_cb_search.db import get_session, Repo, Function, CallEdge
-except ImportError:
     from db import get_session, Repo, Function, CallEdge
+except ImportError:
+    from sementic_cb_search.db import get_session, Repo, Function, CallEdge
 
 SYSTEM_INSTRUCTION = """
 You are a highly precise semantic codebase search agent.
@@ -34,10 +34,10 @@ def semantic_search(query: str, repo_id: int, top_k: int = 5) -> list[dict]:
         repo_id: The ID of the repository to search.
         top_k: The maximum number of results to return (default 5).
     """
-    try:
-        from sementic_cb_search import embeddings
-    except ImportError:
-        import embeddings
+        try:
+            import embeddings
+        except ImportError:
+            from sementic_cb_search import embeddings
     return embeddings.semantic_search(repo_id, query, top_k)
 
 def get_callers(function_id: int, **kwargs) -> list[dict]:
