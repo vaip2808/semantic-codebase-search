@@ -9,8 +9,14 @@ from datetime import datetime
 
 MAX_PY_FILES = 500
 MAX_REPO_SIZE_MB = 300
-TEMP_CLONE_DIR = "data/clones"
-METADATA_DIR = "data/metadata"
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+TEMP_CLONE_DIR = os.path.join(APP_ROOT, "data", "clones")
+METADATA_DIR = os.path.join(APP_ROOT, "data", "metadata")
+
+def ensure_runtime_directories() -> None:
+    """Create ingestion directories independently of the process working directory."""
+    os.makedirs(TEMP_CLONE_DIR, exist_ok=True)
+    os.makedirs(METADATA_DIR, exist_ok=True)
 
 def remove_readonly(func, path, excinfo):
     try:

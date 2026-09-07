@@ -32,7 +32,7 @@ The browser UI is served by the same FastAPI application. It provides repository
 - A Groq API key for agent reasoning
 - Optional: PostgreSQL with the `vector` extension for a shared deployment
 
-SQLite is used automatically when `DATABASE_URL` is unset or PostgreSQL is unavailable. SQLite is convenient for local evaluation; PostgreSQL/pgvector is the intended path for a persistent deployment.
+For the simplest local setup, leave `DATABASE_URL` blank or unset; the app then uses SQLite automatically. PostgreSQL with pgvector is optional and is the intended path for a persistent deployment. If you keep the example PostgreSQL value, replace it with a reachable database connection string.
 
 ### Install
 
@@ -79,6 +79,8 @@ python main.py
 ```
 
 Open <http://127.0.0.1:8000> in a browser. The API is also available through the FastAPI documentation at <http://127.0.0.1:8000/docs>.
+
+Port `8000` must be free. To use another port, change the `port=8000` value in the `uvicorn.run` call in `main.py` and use that port in the browser and API commands below.
 
 ### Index a repository
 

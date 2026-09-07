@@ -19,6 +19,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 # Enable CORS for local development
 app.add_middleware(
     CORSMiddleware,
@@ -325,12 +327,14 @@ def get_file_content(
 # Initialize tables and serve Frontend
 @app.on_event("startup")
 def on_startup():
+    ingestion.ensure_runtime_directories()
     db.init_db()
 
 # Serve static directory containing HTML UI at root /
 # Ensure 'static' folder exists
-os.makedirs("static", exist_ok=True)
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+STATIC_DIR = os.path.join(APP_ROOT, "static")
+os.makedirs(STATIC_DIR, exist_ok=True)
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
