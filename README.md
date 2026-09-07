@@ -152,8 +152,8 @@ When the reasoning provider is rate-limited or unavailable, the fallback does no
 
 ## Verification Notes
 
-The repository includes engineering notes from failure-mode and model-selection evaluation. The live smoke-tested path successfully indexed and queried `psf/requests` with grounded output and a two-tool trace. API credentials are intentionally excluded from Git; use `.env.example` as the configuration template.
+The repository includes a selected model benchmark and production decision record from the model-selection evaluation. The live smoke-tested path successfully indexed and queried `psf/requests` with grounded output and a two-tool trace. API credentials are intentionally excluded from Git; use `.env.example` as the configuration template.
 
 ## License
 
-No license has been selected yet. Add an appropriate license before treating the repository as an open-source project or accepting external contributions.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

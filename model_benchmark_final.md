@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary & Production Recommendation
 
-Following empirical evaluation on the 8 standardized evaluation queries on `psf/requests` (Repo ID `1`), **`openai/gpt-oss-20b`** is confirmed as the **active production default model** in [`agent.py:L335`](file:///c:/Users/Vaibhav%20Pawar/Desktop/sementic_cb_search/agent.py#L335).
+Following empirical evaluation on the 8 standardized evaluation queries on `psf/requests` (Repo ID `1`), **`openai/gpt-oss-20b`** is confirmed as the **active production default model** in `agent.py`.
 
 ### Key Production Takeaways
 1. **Active Endpoint Reality:** Groq has permanently decommissioned legacy Llama models (`llama-3.3-70b-versatile`, `llama-3.1-8b-instant`, `llama3-70b-8192`), returning HTTP `404 model_not_found`.
@@ -44,7 +44,7 @@ The table below presents a unified comparison across all models evaluated throug
 ## 3. Tool-Call Budget Analysis: `max_turns=6` vs `max_turns=10`
 
 ### 3.1 Budget Mechanics & The Sequential Dispatch Constraint
-In [`agent.py`](file:///c:/Users/Vaibhav%20Pawar/Desktop/sementic_cb_search/agent.py), two separate limiters govern execution:
+In `agent.py`, two separate limiters govern execution:
 1. `max_turns`: The maximum iterations of the outer LLM conversation loop.
 2. `MAX_TOTAL_TOOL_CALLS = 10`: The cumulative tool call cap across all turns.
 
@@ -149,7 +149,7 @@ The model gathered all the necessary call-graph edges by Turn 3 (`get_callers(18
 ## 6. Final Production Configuration & Decision
 
 ### 1. Selected Production Model: `openai/gpt-oss-20b`
-- **Default Parameter in Code:** Configured in [`agent.py:L335`](file:///c:/Users/Vaibhav%20Pawar/Desktop/sementic_cb_search/agent.py#L335):
+- **Default Parameter in Code:** Configured in `agent.py`:
   ```python
   def ask_agent(
       question: str, 
@@ -162,5 +162,5 @@ The model gathered all the necessary call-graph edges by Turn 3 (`get_callers(18
 - **Rationale:** Delivers 100% accuracy on single-hop queries, resolves multi-hop graph lookups (Q5), is 16.16s faster than 120b, and operates at ~80% lower token compute cost.
 
 ### 2. Honest Fallback Architecture: `run_degraded_semantic_fallback`
-- Configured in [`agent.py:L170-L244`](file:///c:/Users/Vaibhav%20Pawar/Desktop/sementic_cb_search/agent.py#L170-L244).
+- Configured in `agent.py`.
 - If Groq returns `429`, quota exhaustion, or connection timeout, the agent executes an honest, database-backed `semantic_search` query and outputs candidate functions with file paths, line ranges, and similarity scores under a transparent `[DEGRADED FALLBACK WARNING]` banner.

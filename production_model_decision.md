@@ -55,7 +55,7 @@ Following empirical evaluation on the 8 standardized evaluation queries (3 runs 
 
 ## 4. Implementation in Codebase
 
-The default parameter in [`agent.py`](file:///c:/Users/Vaibhav%20Pawar/Desktop/sementic_cb_search/agent.py) is explicitly set:
+The default parameter in `agent.py` is explicitly set:
 ```python
 def ask_agent(
     question: str, 
