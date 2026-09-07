@@ -34,10 +34,10 @@ def semantic_search(query: str, repo_id: int, top_k: int = 5) -> list[dict]:
         repo_id: The ID of the repository to search.
         top_k: The maximum number of results to return (default 5).
     """
-        try:
-            import embeddings
-        except ImportError:
-            from sementic_cb_search import embeddings
+    try:
+        import embeddings
+    except ImportError:
+        from sementic_cb_search import embeddings
     return embeddings.semantic_search(repo_id, query, top_k)
 
 def get_callers(function_id: int, **kwargs) -> list[dict]:
