@@ -409,6 +409,16 @@ def _ask_agent_groq(question: str, repo_id: int, max_turns: int, disable_fallbac
                 fallback["provider_error"] = "Groq rejected a tool call because required arguments were invalid or missing."
                 fallback["trace"] = trace + fallback.get("trace", [])
                 return fallback
+            is_capacity_error = any(
+                marker in error_text
+                for marker in ("429", "rate limit", "rate_limit", "quota", "timeout", "temporarily unavailable")
+            )
+            if is_capacity_error:
+                print(f"[WARNING] Groq capacity or transient error; using rate-limit fallback: {exc}")
+                fallback = run_degraded_semantic_fallback(question, repo_id, reason="rate_limit")
+                fallback["provider_error"] = "The reasoning provider was rate-limited or temporarily unavailable."
+                fallback["trace"] = trace + fallback.get("trace", [])
+                return fallback
             raise
         message = response.choices[0].message
         if not message.tool_calls:
