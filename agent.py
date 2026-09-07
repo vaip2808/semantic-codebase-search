@@ -171,10 +171,17 @@ def get_file(file_path: str, start_line: int, end_line: int, repo_id: int, **kwa
     finally:
         session.close()
 
-def run_degraded_semantic_fallback(question: str, repo_id: int) -> dict:
+def run_degraded_semantic_fallback(question: str, repo_id: int, reason: str = "rate_limit") -> dict:
     """Honest, repo-aware, non-LLM fallback when LLM API is rate-limited or unavailable.
     Queries the actual codebase index using semantic_search and presents raw matches."""
     trace = []
+    is_tool_error = reason == "tool_schema_validation_error"
+    fallback_status = "tool_error_fallback" if is_tool_error else "rate_limited_fallback"
+    warning = (
+        "[DEGRADED FALLBACK WARNING: The reasoning step hit a tool-validation error. "
+        if is_tool_error
+        else "[DEGRADED FALLBACK WARNING: The LLM service is temporarily rate-limited or unavailable. "
+    )
     try:
         res_search = semantic_search(query=question, repo_id=repo_id, top_k=5)
         trace.append({
@@ -194,14 +201,14 @@ def run_degraded_semantic_fallback(question: str, repo_id: int) -> dict:
 
     if not res_search or (isinstance(res_search, list) and len(res_search) == 0):
         answer = (
-            "[DEGRADED FALLBACK WARNING: The LLM service is temporarily rate-limited or unavailable. "
-            "Attempted non-LLM semantic search fallback, but no matching functions were found in this repository.]\n\n"
+            warning
+            + "Attempted non-LLM semantic search fallback, but no matching functions were found in this repository.]\n\n"
             f"**Repository ID:** {repo_id}\n"
             f"**Search Query:** \"{question}\"\n\n"
             "Please retry your request in a few moments when LLM capacity becomes available."
         )
         return {
-            "status": "rate_limited_fallback",
+            "status": fallback_status,
             "grounded": False,
             "has_called_semantic_search": True,
             "answer": answer,
@@ -225,8 +232,8 @@ def run_degraded_semantic_fallback(question: str, repo_id: int) -> dict:
         )
 
     answer = (
-        "[DEGRADED FALLBACK WARNING: The LLM service is temporarily rate-limited or unavailable. "
-        "The following are raw semantic search index matches from the codebase without LLM synthesis or call-graph tracing.]\n\n"
+        warning
+        + "The following are raw semantic search index matches from the codebase without LLM synthesis or call-graph tracing.]\n\n"
         f"**Repository ID:** {repo_id}\n"
         f"**Search Query:** \"{question}\"\n\n"
         "**Top Candidate Functions in Repository:**\n"
@@ -237,7 +244,7 @@ def run_degraded_semantic_fallback(question: str, repo_id: int) -> dict:
     is_grounded = check_is_grounded_v2(answer, repo_id=repo_id, has_called_ss=True)
 
     return {
-        "status": "rate_limited_fallback",
+        "status": fallback_status,
         "grounded": is_grounded,
         "has_called_semantic_search": True,
         "answer": answer,
@@ -398,8 +405,7 @@ def _ask_agent_groq(question: str, repo_id: int, max_turns: int, disable_fallbac
             )
             if is_schema_error:
                 print(f"[WARNING] Groq rejected a malformed tool call; using grounded fallback: {exc}")
-                fallback = run_degraded_semantic_fallback(question, repo_id)
-                fallback["fallback_reason"] = "tool_schema_validation_error"
+                fallback = run_degraded_semantic_fallback(question, repo_id, reason="tool_schema_validation_error")
                 fallback["provider_error"] = "Groq rejected a tool call because required arguments were invalid or missing."
                 fallback["trace"] = trace + fallback.get("trace", [])
                 return fallback
